@@ -12,7 +12,7 @@ class TwoHostTwoLinkTopo(Topo):
         client = self.addHost("client")
         server = self.addHost("server")
         self.addLink(client, server, delay=latency_1, bw=10, loss=error_rate, params1={ 'ip' : '10.0.0.1/24' }, params2={ 'ip' : '10.0.0.2/24' })
-        self.addLink(client, server, delay=latency_2, bw=10, loss=error_rate, params1={ 'ip' : '10.0.1.1/24' }, params2={ 'ip' : '10.0.1.2/24' })
+        self.addLink(client, server, delay=latency_2, bw=1, loss=error_rate, params1={ 'ip' : '10.0.1.1/24' }, params2={ 'ip' : '10.0.1.2/24' })
 
 if __name__ == '__main__':
     latency_list = [10, 100]  # latency in ms. count 6
