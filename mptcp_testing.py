@@ -4,6 +4,7 @@ from mininet.topo import Topo
 from mininet.link import TCLink,TCIntf
 from mininet.net import Mininet
 from mininet.log import setLogLevel
+from mininet.log import lg, info
 
 
 class TwoHostTwoLinkTopo(Topo):
