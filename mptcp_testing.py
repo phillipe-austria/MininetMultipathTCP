@@ -18,7 +18,7 @@ if __name__ == '__main__':
     error_rate_list = [0.1, 0.01, 0.001, 0.0001, 0.00001]  # error_rate in %, count 5
     setLogLevel(levelname='info')
     with open("results_multipath.csv", 'w') as result_file:
-        result_file.write("latency,error_rate,server_bw\n")
+        result_file.write("latency,error_rate,bandwidth\n")
         for latency_1 in latency_list:
             for latency_2 in latency_list:
                 for error_rate in error_rate_list:
