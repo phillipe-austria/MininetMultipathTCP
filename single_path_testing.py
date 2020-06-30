@@ -20,19 +20,20 @@ class TwoHostTopo(Topo):
 
 
 if __name__ == '__main__':
-    bandwidth_list = [1, 10]  # bandwidth in Mbps, count 2
-    latency_list = [10, 100]  # latency in ms. count 6
+    bandwidth_list = [10]  # bandwidth in Mbps, count 2
+    latency_list = [1000, 1500, 2000, 2500]  # latency in ms. count 6
     error_rate_list = [0.1, 0.01, 0.001, 0.0001, 0.00001]  # error_rate in %, count 5
     lg.setLogLevel('info')
-    with open("results.csv", 'w') as result_file:
-        for bandwidth in bandwidth_list:
-            for latency in latency_list:
-                for error_rate in error_rate_list:
-                    net = Mininet(controller=None, topo=TwoHostTopo(bandwidth, str(latency) + "ms", error_rate))
-                    net.start()
-                    info(f"*** Iperf with {bandwidth}Mbps, {latency}ms and {error_rate}%\n")
-                    server_bw_with_unit, _ = net.iperf(fmt='m', seconds=100)  # get the iperf server bandwidth results in Mbps. Ignore the client reported bandwidth since its inaccurate.
-                    # server_bw_with_unit   is a string in the format of 'X Mbps'. We split the string just to get the X alone and convert the string to a float
-                    server_bw = float(server_bw_with_unit.split(' ')[0])
-                    result_file.write(f"{bandwidth},{latency},{error_rate},{server_bw}\n")
-                    net.stop()
+
+    for bandwidth in bandwidth_list:
+        for latency in latency_list:
+            for error_rate in error_rate_list:
+                net = Mininet(controller=None, topo=TwoHostTopo(bandwidth, str(latency) + "ms", error_rate))
+                net.start()
+                h1, h2 = net.get("h1", "h2")
+                info(f"*** Iperf with {bandwidth}Mbps, {latency}ms and {error_rate}%\n")
+                h2.sendCmd("iperf3", {"-s": ""})
+                h1.sendCmd("iperf3", {"-c": h2.IP(), "--json": "", "--logfile": "~/MininetMultipathTCP/" + bandwidth
+                                                                                + latency + error_rate +".json"})
+                h2.sendInt
+                net.stop()
