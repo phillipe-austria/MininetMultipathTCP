@@ -3,32 +3,36 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from plotly.validators.scatter.marker import SymbolValidator
 import json
-
+from os import listdir
 import pandas as pd
 import json
 from CONSTANTS import *
 
+from typing import TypedDict
 
-if __name__ == '__main__':
+
+class TestParameters(TypedDict):
+    test_length: int
+    error_rate: float
 
 
+def plot_graph(directory):
     bandwidth_dict = {
         "tcp_algorithm": [],
         "link": [],
         "bandwidth": [],
         "link_2_latency": []
     }
-    config = {}
+    config: TestParameters = {}
     bandwidth_df = None
 
-    with open('results/multi_protocol_multi_latency_single_speed/config.json') as json_file:
-        config = json.load(json_file)
-
+    with open(directory + '/config.json') as json_file:
+        config: TestParameters = json.load(json_file)
     link_1_bandwidth = 0.0  # Link 1 bandwith at 100ms latency
     for tcp_scheduler in tcp_scheduling_algorithms:
         for link_2_latency in link_2_latency_list:
             for tcp_type in tcp_type_list:
-                with open(f"results/multi_protocol_multi_latency_single_speed/{tcp_scheduler}_{tcp_type}_{link_2_latency}_{error_rate}.json") as iperf_json_file:
+                with open(f"{directory}/{tcp_scheduler}_{tcp_type}_{link_2_latency}_{config['error_rate']}.json") as iperf_json_file:
                     try:
                         iperf_result = json.load(iperf_json_file)
                         if tcp_type == "single_path":
@@ -58,9 +62,8 @@ if __name__ == '__main__':
                             bandwidth_dict["link"].append("mptcp")
                             bandwidth_dict["link_2_latency"].append(link_2_latency)
                     except json.decoder.JSONDecodeError:
-                        print(f"error with file {iperf_json_file.name}" )
+                        print(f"error with file {iperf_json_file.name}")
     bandwidth_df = pd.DataFrame.from_dict(bandwidth_dict)
-
 
     # each bar chart displays a single protocol compared with varying latencies
     fig = make_subplots(rows=1,
@@ -74,27 +77,27 @@ if __name__ == '__main__':
             go.Bar(name='Link 1 throughput',
                    x=link_2_latency_list,
                    y=single_protocol_df.query("link =='link_1'")["bandwidth"].to_list()),
-            col=i+1,
+            col=i + 1,
             row=1
         )
         fig.add_trace(
             go.Bar(name='Link 2 throughput',
                    x=link_2_latency_list,
                    y=single_protocol_df.query("link =='link_2'")["bandwidth"].to_list()),
-            col=i+1,
+            col=i + 1,
             row=1
         )
         fig.add_trace(
             go.Bar(name='Total throughput', x=link_2_latency_list,
                    y=single_protocol_df.query("link =='combined'")["bandwidth"].to_list()),
-            col=i+1,
+            col=i + 1,
             row=1
         )
         fig.add_trace(
             go.Bar(name='Multipath TCP throughput',
-                             x=link_2_latency_list,
-                             y=single_protocol_df.query("link =='mptcp'")["bandwidth"].to_list()),
-            col=i+1,
+                   x=link_2_latency_list,
+                   y=single_protocol_df.query("link =='mptcp'")["bandwidth"].to_list()),
+            col=i + 1,
             row=1
         )
 
@@ -106,7 +109,6 @@ if __name__ == '__main__':
                       legend_title="Links"
                       )
     fig.show()
-
 
     # each bar chart displays a single latency compared with varying protocols
 
@@ -152,3 +154,22 @@ if __name__ == '__main__':
                         yaxis_title="Bandwidth",
                         legend_title="Links")
     fig_2.show()
+
+    # line graph comparing bandwidths and latencies
+    multipath_bandwidth = bandwidth_df.query("link == 'mptcp'")
+    fig_3 = px.line(multipath_bandwidth, x="link_2_latency", y="bandwidth", color="tcp_algorithm")
+    fig_3.update_layout(
+                        title=f"Error rate: {config['error_rate']}%",
+                        xaxis_title="Latency",
+                        yaxis_title="Bandwidth",
+                        legend_title="Links")
+
+    fig_3.show()
+
+
+if __name__ == '__main__':
+
+
+    test_directories = listdir('results/multi_protocol_multi_latency_single_speed/')
+    for directory in test_directories:
+        plot_graph('results/multi_protocol_multi_latency_single_speed/' + directory)

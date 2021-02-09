@@ -42,7 +42,7 @@ if __name__ == '__main__':
             h1.cmdPrint(f"iperf3 --json -t {iperf_test_time} -c {h2.IP()} ",
                         f"-C {algorithm}",
                         "-i 0"
-                        f" --logfile results/multi_protocol_multi_latency_single_speed/{algorithm}_single_path_{link_2_latency}_{error_rate}.json")
+                        f" --logfile results/multi_protocol_multi_latency_single_speed/{algorithm}_single_path_{link_2_latency}.json")
             sleep(5)  # Wait for the client to finish the test.
 
     #  multi path testing
@@ -59,6 +59,6 @@ if __name__ == '__main__':
                         f"-t {iperf_test_time}",
                         f" -c {h2.IP()} -C {algorithm} ",
                         "-i 0",
-                        f" --logfile results/multi_protocol_multi_latency_single_speed/{algorithm}_multi_path_{link_2_latency}_{error_rate}.json")
+                        f" --logfile results/multi_protocol_multi_latency_single_speed/{algorithm}_multi_path_{link_2_latency}.json")
             sleep(5)  # Wait for the client to finish the test.
     net.stop()
