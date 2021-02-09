@@ -24,7 +24,8 @@ if __name__ == '__main__':
     h2.cmd("iperf3 -s -D")
     sleep(5)  # Wait for the server to start up.
 
-    # write the test parameters to config.json
+    # write the test parameters to a file called config.json so we can look up the parameters of the test later
+    # TODO: we should probably save all parameters of the test
     config = {
         "test_length": iperf_test_time,
         "error_rate": error_rate
@@ -32,8 +33,8 @@ if __name__ == '__main__':
     with open('results/multi_protocol_multi_latency_single_speed/config.json', 'w') as fp:
         json.dump(config, fp)
 
-
     #  single path testing
+    #  stores the test results in a folder like results/multi_protocol_multi_latency_single_speed/hybla_single_path_1000.json
     print("Single path testing")
     for algorithm in tcp_scheduling_algorithms:
         for link_2_latency in link_2_latency_list:
