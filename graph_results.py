@@ -168,8 +168,8 @@ def plot_graph(directory):
 
 
 if __name__ == '__main__':
+    plot_graph('results/multi_protocol_multi_latency_single_speed')
 
-
-    test_directories = listdir('results/multi_protocol_multi_latency_single_speed/')
-    for directory in test_directories:
-        plot_graph('results/multi_protocol_multi_latency_single_speed/' + directory)
+    #test_directories = listdir('results/multi_protocol_multi_latency_single_speed/')
+    #for directory in test_directories:
+    #    plot_graph('results/multi_protocol_multi_latency_single_speed/' + directory)
